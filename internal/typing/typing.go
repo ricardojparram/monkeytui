@@ -57,8 +57,8 @@ type Engine struct {
 	keystrokes        int
 	correctKeystrokes int
 
-	samples   []stats.Sample
-	lastErr   int // committed errors at last sample (for per-second delta)
+	samples []stats.Sample
+	lastErr int // committed errors at last sample (for per-second delta)
 }
 
 // New builds a fresh engine for the given config.

@@ -9,6 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/ricardojparram/monkeytui/internal/typing"
 	"github.com/ricardojparram/monkeytui/internal/ui"
+	"github.com/ricardojparram/monkeytui/internal/words"
 )
 
 func main() {
@@ -21,6 +22,7 @@ func main() {
 	t := flag.Int("time", 30, "seconds for time mode")
 	count := flag.Int("words", 25, "word count for words mode")
 	themeName := flag.String("theme", "yellow", "accent theme: yellow green cyan magenta blue red")
+	seed := flag.Int64("seed", 0, "fixed RNG seed for reproducible words (0 = random)")
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr,
 			"monkeytui — minimalist terminal typing test\n\n"+
@@ -33,6 +35,10 @@ func main() {
 		flag.PrintDefaults()
 	}
 	flag.Parse()
+
+	if *seed != 0 {
+		words.Seed(*seed)
+	}
 
 	cfg := typing.Config{TimeLimit: *t, WordCount: *count}
 	switch *mode {

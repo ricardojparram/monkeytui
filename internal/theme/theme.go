@@ -10,13 +10,13 @@ type Theme struct {
 	Name   string
 	Accent lipgloss.Color
 
-	Sub    lipgloss.Style // untyped target text (dim)
-	Text   lipgloss.Style // correctly typed text
-	Error  lipgloss.Style // mistyped target characters
-	Extra  lipgloss.Style // characters typed past a word's length
-	Caret  lipgloss.Style // the cursor block
-	Main   lipgloss.Style // accent-colored text
-	Faint  lipgloss.Style // hints and chrome
+	Sub   lipgloss.Style // untyped target text (dim)
+	Text  lipgloss.Style // correctly typed text
+	Error lipgloss.Style // mistyped target characters
+	Extra lipgloss.Style // characters typed past a word's length
+	Caret lipgloss.Style // the cursor block
+	Main  lipgloss.Style // accent-colored text
+	Faint lipgloss.Style // hints and chrome
 }
 
 // ANSI color slots (0-15) map to the terminal's own palette.
@@ -44,9 +44,9 @@ func build(name string, accent lipgloss.Color) Theme {
 		Extra:  lipgloss.NewStyle().Foreground(ansiBrRed),
 		// Caret is a monkeytype-style line: the upcoming character is tinted the
 		// accent color and underlined, so it never hides text or jumps over it.
-		Caret:  lipgloss.NewStyle().Foreground(accent).Underline(true).Bold(true),
-		Main:   lipgloss.NewStyle().Foreground(accent),
-		Faint:  lipgloss.NewStyle().Foreground(ansiBrBlack),
+		Caret: lipgloss.NewStyle().Foreground(accent).Underline(true).Bold(true),
+		Main:  lipgloss.NewStyle().Foreground(accent),
+		Faint: lipgloss.NewStyle().Foreground(ansiBrBlack),
 	}
 }
 

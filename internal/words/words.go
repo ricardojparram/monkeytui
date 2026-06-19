@@ -6,6 +6,7 @@ import (
 	_ "embed"
 	"math/rand"
 	"strings"
+	"time"
 )
 
 //go:embed english.txt
@@ -13,6 +14,10 @@ var englishRaw string
 
 // list holds the parsed common-English words, loaded once at init.
 var list []string
+
+// rng is the package's random source; reseedable via Seed for reproducible
+// runs (used by tests and the recorded demo).
+var rng = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 func init() {
 	for _, w := range strings.Fields(englishRaw) {
@@ -22,6 +27,9 @@ func init() {
 		}
 	}
 }
+
+// Seed makes word generation deterministic for the given seed.
+func Seed(seed int64) { rng = rand.New(rand.NewSource(seed)) }
 
 // All returns the full bundled word list.
 func All() []string { return list }
@@ -35,7 +43,7 @@ func Random(n int) []string {
 	out := make([]string, 0, n)
 	prev := -1
 	for i := 0; i < n; i++ {
-		idx := rand.Intn(len(list))
+		idx := rng.Intn(len(list))
 		if idx == prev && len(list) > 1 {
 			idx = (idx + 1) % len(list)
 		}

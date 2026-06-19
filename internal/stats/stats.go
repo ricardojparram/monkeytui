@@ -20,10 +20,10 @@ type Result struct {
 	Consistency float64 // 0..100
 	Seconds     float64
 
-	Correct   int // correctly typed characters
-	Incorrect int // wrong characters
-	Extra     int // characters typed past a word's length
-	Missed    int // characters in words skipped via space
+	Correct    int // correctly typed characters
+	Incorrect  int // wrong characters
+	Extra      int // characters typed past a word's length
+	Missed     int // characters in words skipped via space
 	Keystrokes int
 
 	Samples []Sample
