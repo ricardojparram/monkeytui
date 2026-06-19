@@ -15,6 +15,22 @@ Adapts to your terminal's color theme (uses ANSI palette colors).
 - **Theme-adaptive**: colors come from your terminal's own ANSI palette;
   pick an accent: yellow, green, cyan, magenta, blue, red
 
+## Install
+
+One-line install (builds with Go and puts `monkeytui` on your PATH):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/ricardojparram/monkeytui/main/install.sh | bash
+```
+
+Or with Go directly:
+
+```sh
+go install github.com/ricardojparram/monkeytui@latest
+```
+
+Requires Go 1.21+. After installing, just run `monkeytui`.
+
 ## Run
 
 ```sh
