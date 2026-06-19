@@ -3,6 +3,9 @@
 *.exe
 *.out
 
+# Release build artifacts
+/dist/
+
 # Test & profiling artifacts
 *.test
 *.prof
