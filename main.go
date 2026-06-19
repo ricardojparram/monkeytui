@@ -12,10 +12,26 @@ import (
 )
 
 func main() {
+	// Subcommands (update / uninstall / version) run before flag parsing.
+	if dispatchCommand(os.Args[1:]) {
+		return
+	}
+
 	mode := flag.String("mode", "time", "test mode: time | words | quote")
 	t := flag.Int("time", 30, "seconds for time mode")
 	count := flag.Int("words", 25, "word count for words mode")
 	themeName := flag.String("theme", "yellow", "accent theme: yellow green cyan magenta blue red")
+	flag.Usage = func() {
+		fmt.Fprint(os.Stderr,
+			"monkeytui — minimalist terminal typing test\n\n"+
+				"Usage:\n"+
+				"  monkeytui [flags]            start a typing test\n"+
+				"  monkeytui update            update to the latest release\n"+
+				"  monkeytui uninstall         remove the installed binary\n"+
+				"  monkeytui version           print the version\n\n"+
+				"Flags:\n")
+		flag.PrintDefaults()
+	}
 	flag.Parse()
 
 	cfg := typing.Config{TimeLimit: *t, WordCount: *count}

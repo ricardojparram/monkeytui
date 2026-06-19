@@ -17,19 +17,27 @@ Adapts to your terminal's color theme (uses ANSI palette colors).
 
 ## Install
 
-One-line install (builds with Go and puts `monkeytui` on your PATH):
+One-line install (no Go required — downloads a prebuilt binary):
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/ricardojparram/monkeytui/main/install.sh | bash
 ```
 
-Or with Go directly:
+Or with Go:
 
 ```sh
 go install github.com/ricardojparram/monkeytui@latest
 ```
 
-Requires Go 1.21+. After installing, just run `monkeytui`.
+After installing, just run `monkeytui`.
+
+### Update / uninstall
+
+```sh
+monkeytui update      # download and install the latest release
+monkeytui uninstall   # remove the installed binary
+monkeytui version     # print the installed version
+```
 
 ## Run
 

@@ -23,17 +23,23 @@ type Theme struct {
 const (
 	ansiRed     = lipgloss.Color("1")
 	ansiBrBlack = lipgloss.Color("8")
-	ansiWhite   = lipgloss.Color("7")
 	ansiBrRed   = lipgloss.Color("9")
 )
 
 // build assembles a theme from a single accent color.
+//
+// Contrast strategy: typed text uses the terminal's DEFAULT foreground (no
+// color set), so it is always full-strength and readable against the user's
+// background, whatever theme they run. Untyped text uses ANSI 8 (bright black),
+// the muted "gray/comment" slot every theme defines. Default-fg vs gray keeps a
+// clear difference even on low-contrast palettes like gruvbox, where 7 (white)
+// and 8 sit too close together.
 func build(name string, accent lipgloss.Color) Theme {
 	return Theme{
 		Name:   name,
 		Accent: accent,
 		Sub:    lipgloss.NewStyle().Foreground(ansiBrBlack),
-		Text:   lipgloss.NewStyle().Foreground(ansiWhite),
+		Text:   lipgloss.NewStyle(), // terminal default foreground = max contrast
 		Error:  lipgloss.NewStyle().Foreground(ansiRed).Underline(true),
 		Extra:  lipgloss.NewStyle().Foreground(ansiBrRed),
 		// Caret is a monkeytype-style line: the upcoming character is tinted the
