@@ -1,0 +1,24 @@
+# Compiled binary
+/monkeytui
+*.exe
+*.out
+
+# Test & profiling artifacts
+*.test
+*.prof
+*.cover
+coverage.*
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Editor / OS noise
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
+
+# Local agent / tooling config
+.claude/
