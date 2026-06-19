@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
-	"monkeytui/internal/theme"
-	"monkeytui/internal/typing"
+	"github.com/ricardojparram/monkeytui/internal/theme"
+	"github.com/ricardojparram/monkeytui/internal/typing"
 )
 
 // cmdKind identifies what applying a command does.

@@ -6,8 +6,8 @@ import (
 	"github.com/NimbleMarkets/ntcharts/canvas"
 	"github.com/NimbleMarkets/ntcharts/linechart"
 	"github.com/charmbracelet/lipgloss"
-	"monkeytui/internal/stats"
-	"monkeytui/internal/theme"
+	"github.com/ricardojparram/monkeytui/internal/stats"
+	"github.com/ricardojparram/monkeytui/internal/theme"
 )
 
 // renderChart draws a braille line chart (via ntcharts) of WPM in the accent

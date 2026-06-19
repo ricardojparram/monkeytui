@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"monkeytui/internal/typing"
+	"github.com/ricardojparram/monkeytui/internal/typing"
 )
 
 var ansiRE = regexp.MustCompile(`\x1b\[[0-9;]*m`)

@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"monkeytui/internal/quotes"
-	"monkeytui/internal/stats"
-	"monkeytui/internal/words"
+	"github.com/ricardojparram/monkeytui/internal/quotes"
+	"github.com/ricardojparram/monkeytui/internal/stats"
+	"github.com/ricardojparram/monkeytui/internal/words"
 )
 
 // Mode selects how a test is bounded.

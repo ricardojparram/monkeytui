@@ -1,4 +1,4 @@
-module monkeytui
+module github.com/ricardojparram/monkeytui
 
 go 1.25.10
 

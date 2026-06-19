@@ -7,8 +7,8 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"monkeytui/internal/typing"
-	"monkeytui/internal/ui"
+	"github.com/ricardojparram/monkeytui/internal/typing"
+	"github.com/ricardojparram/monkeytui/internal/ui"
 )
 
 func main() {

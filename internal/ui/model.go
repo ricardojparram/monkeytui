@@ -7,9 +7,9 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"monkeytui/internal/stats"
-	"monkeytui/internal/theme"
-	"monkeytui/internal/typing"
+	"github.com/ricardojparram/monkeytui/internal/stats"
+	"github.com/ricardojparram/monkeytui/internal/theme"
+	"github.com/ricardojparram/monkeytui/internal/typing"
 )
 
 type state int

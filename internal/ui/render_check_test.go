@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"monkeytui/internal/stats"
-	"monkeytui/internal/typing"
+	"github.com/ricardojparram/monkeytui/internal/stats"
+	"github.com/ricardojparram/monkeytui/internal/typing"
 )
 
 // TestRenderSmoke drives a words test to completion and prints both the typing

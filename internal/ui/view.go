@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
-	"monkeytui/internal/typing"
+	"github.com/ricardojparram/monkeytui/internal/typing"
 )
 
 // View renders the current screen.
