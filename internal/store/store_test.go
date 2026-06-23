@@ -1,4 +1,3 @@
-// internal/store/store_test.go
 package store
 
 import (
