@@ -31,6 +31,10 @@ func init() {
 // Seed makes word generation deterministic for the given seed.
 func Seed(seed int64) { rng = rand.New(rand.NewSource(seed)) }
 
+// RNG returns the package's random source so callers (e.g. decoration) share
+// the same seedable stream as word generation.
+func RNG() *rand.Rand { return rng }
+
 // All returns the full bundled word list.
 func All() []string { return list }
 

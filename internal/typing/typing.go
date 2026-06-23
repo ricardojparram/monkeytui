@@ -34,9 +34,11 @@ func (m Mode) String() string {
 
 // Config describes the parameters of a single test.
 type Config struct {
-	Mode      Mode
-	TimeLimit int // seconds, for ModeTime
-	WordCount int // words, for ModeWords
+	Mode        Mode
+	TimeLimit   int // seconds, for ModeTime
+	WordCount   int // words, for ModeWords
+	Punctuation bool
+	Numbers     bool
 }
 
 // Engine holds the mutable state of an in-progress test.
@@ -66,13 +68,13 @@ func New(cfg Config) *Engine {
 	e := &Engine{cfg: cfg, typedWords: []string{}}
 	switch cfg.Mode {
 	case ModeWords:
-		e.targetWords = words.Random(max(cfg.WordCount, 1))
+		e.targetWords = words.Decorate(words.Random(max(cfg.WordCount, 1)), cfg.Punctuation, cfg.Numbers, words.RNG())
 	case ModeQuote:
 		q := quotes.Random()
 		e.targetWords = strings.Fields(q.Text)
 		e.quoteSource = q.Source
 	default: // ModeTime
-		e.targetWords = words.Random(60)
+		e.targetWords = words.Decorate(words.Random(60), cfg.Punctuation, cfg.Numbers, words.RNG())
 	}
 	return e
 }

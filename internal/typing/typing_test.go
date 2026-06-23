@@ -67,3 +67,18 @@ func TestTimeModeFinishesOnTick(t *testing.T) {
 		t.Fatal("engine not marked finished")
 	}
 }
+
+func TestNewWordsModeDecorationDoesNotChangeCount(t *testing.T) {
+	e := New(Config{Mode: ModeWords, WordCount: 30, Punctuation: true, Numbers: true})
+	if got := len(e.TargetWords()); got != 30 {
+		t.Fatalf("decoration must preserve word count: got %d want 30", got)
+	}
+}
+
+func TestNewQuoteModeIgnoresDecoration(t *testing.T) {
+	// Quote text must be untouched by the flags (no crash, words present).
+	e := New(Config{Mode: ModeQuote, Punctuation: true, Numbers: true})
+	if len(e.TargetWords()) == 0 {
+		t.Fatal("quote mode should still produce target words")
+	}
+}
