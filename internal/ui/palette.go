@@ -19,6 +19,7 @@ const (
 	cmdRestart
 	cmdTogglePunct
 	cmdToggleNumbers
+	cmdShowStats
 	cmdQuit
 )
 
@@ -59,6 +60,7 @@ func newPalette() palette {
 	for _, name := range theme.Names() {
 		items = append(items, command{title: "theme " + name, group: "theme", kind: cmdTheme, sarg: name})
 	}
+	items = append(items, command{title: "stats", group: "action", kind: cmdShowStats})
 	items = append(items, command{title: "quit", group: "action", kind: cmdQuit})
 
 	p := palette{items: items}
@@ -120,6 +122,20 @@ func (p *palette) selected() (command, bool) {
 	return command{}, false
 }
 
+// scrollWindow returns the [start,end) slice of items to render so that sel
+// stays visible within a window of at most maxRows, including when sel reaches
+// the end of a list longer than the window.
+func scrollWindow(n, sel, maxRows int) (int, int) {
+	start := 0
+	if n > maxRows && sel >= maxRows {
+		start = sel - maxRows + 1
+		if start > n-maxRows {
+			start = n - maxRows
+		}
+	}
+	return start, min(start+maxRows, n)
+}
+
 // view renders the palette as a centered box.
 func (p *palette) view(th theme.Theme, width, height int) string {
 	boxW := min(50, width-4)
@@ -131,11 +147,13 @@ func (p *palette) view(th theme.Theme, width, height int) string {
 	rows := []string{prompt, ""}
 
 	maxRows := 10
-	for i, it := range p.filtered {
-		if i >= maxRows {
-			rows = append(rows, th.Faint.Render("  …"))
-			break
-		}
+	n := len(p.filtered)
+	start, end := scrollWindow(n, p.sel, maxRows)
+	if start > 0 {
+		rows = append(rows, th.Faint.Render("  ↑ …"))
+	}
+	for i := start; i < end; i++ {
+		it := p.filtered[i]
 		line := "  " + it.title
 		grp := th.Faint.Render(" " + it.group)
 		if i == p.sel {
@@ -145,7 +163,10 @@ func (p *palette) view(th theme.Theme, width, height int) string {
 		}
 		rows = append(rows, line+grp)
 	}
-	if len(p.filtered) == 0 {
+	if end < n {
+		rows = append(rows, th.Faint.Render("  ↓ …"))
+	}
+	if n == 0 {
 		rows = append(rows, th.Faint.Render("  no matches"))
 	}
 	rows = append(rows, "", th.Faint.Render("enter select · esc close · ↑↓ move"))

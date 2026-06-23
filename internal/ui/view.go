@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/ricardojparram/monkeytui/internal/store"
 	"github.com/ricardojparram/monkeytui/internal/typing"
 )
 
@@ -18,9 +19,12 @@ func (m Model) View() string {
 		return m.pal.view(m.th, w, h)
 	}
 	var body string
-	if m.state == stateResults {
+	switch m.state {
+	case stateStats:
+		body = m.renderStats(w)
+	case stateResults:
 		body = m.renderResults(w)
-	} else {
+	default:
 		body = m.renderTyping(w)
 	}
 	return lipgloss.Place(w, h, lipgloss.Center, lipgloss.Center, body)
@@ -304,4 +308,42 @@ func (m Model) renderResults(w int) string {
 		top, "", statRow, "",
 		th.Faint.Render("replay"), replay, "", hint)
 	return lipgloss.NewStyle().Width(maxW).Render(block)
+}
+
+// renderStats reproduces the `monkeytui stats` summary inside the TUI: a
+// per-mode table and the most recent runs, styled with the active theme.
+func (m Model) renderStats(w int) string {
+	th := m.th
+	maxW := min(w-4, 72)
+	if maxW < 30 {
+		maxW = 30
+	}
+	s := store.Summarize(m.history)
+
+	rows := []string{th.Main.Bold(true).Render("stats")}
+	if s.Total == 0 {
+		rows = append(rows,
+			"",
+			th.Faint.Render("no tests recorded yet — finish a test to see stats."),
+			"",
+			th.Faint.Render("press any key to go back"))
+		return lipgloss.NewStyle().Width(maxW).Render(strings.Join(rows, "\n"))
+	}
+
+	rows = append(rows, th.Faint.Render(fmt.Sprintf("%d tests recorded", s.Total)), "")
+	rows = append(rows, th.Faint.Render(fmt.Sprintf("%-8s %5s %6s %7s %6s",
+		"mode", "tests", "best", "avg wpm", "acc")))
+	for _, md := range s.Modes {
+		rows = append(rows, th.Text.Render(fmt.Sprintf("%-8s %5d %6.0f %7.0f %5.0f%%",
+			md.Mode, md.Count, md.Best, md.AvgWPM, md.AvgAcc)))
+	}
+
+	rows = append(rows, "", th.Faint.Render("recent"))
+	for _, r := range s.Recent {
+		rows = append(rows, th.Text.Render(fmt.Sprintf("  %-12s %4.0f wpm  %3.0f%%",
+			store.RecordLabel(r), r.WPM, r.Accuracy)))
+	}
+
+	rows = append(rows, "", th.Faint.Render("press any key to go back"))
+	return lipgloss.NewStyle().Width(maxW).Render(strings.Join(rows, "\n"))
 }

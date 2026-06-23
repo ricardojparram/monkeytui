@@ -18,6 +18,7 @@ type state int
 const (
 	stateTyping state = iota
 	stateResults
+	stateStats
 )
 
 // tickMsg fires once per second to sample metrics and drive the countdown.
@@ -36,6 +37,7 @@ type Model struct {
 	th         theme.Theme
 	themeName  string
 	state      state
+	prevState  state // state to return to when leaving the stats screen
 	result     stats.Result
 	pal        palette
 	now        time.Time
@@ -190,6 +192,10 @@ func (m Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	}
 
 	switch m.state {
+	case stateStats:
+		// Any key closes the stats screen and returns to the prior screen.
+		m.state = m.prevState
+		return m, nil
 	case stateTyping:
 		return m.handleTypingKey(msg)
 	case stateResults:
@@ -288,6 +294,10 @@ func (m Model) apply(cmd command) (tea.Model, tea.Cmd) {
 		m.restart()
 		m.savePrefs()
 		return m, tick()
+	case cmdShowStats:
+		m.prevState = m.state
+		m.state = stateStats
+		return m, nil
 	case cmdTheme:
 		m.th = theme.ByName(cmd.sarg)
 		m.themeName = cmd.sarg

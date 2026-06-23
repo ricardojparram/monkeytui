@@ -3,6 +3,7 @@ package ui
 import (
 	"testing"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/ricardojparram/monkeytui/internal/store"
 	"github.com/ricardojparram/monkeytui/internal/typing"
 )
@@ -28,6 +29,25 @@ func TestApplyModeSwitchPreservesFlags(t *testing.T) {
 	}
 	if !got.cfg.Punctuation || !got.cfg.Numbers {
 		t.Fatalf("mode switch must preserve flags, got %+v", got.cfg)
+	}
+}
+
+func TestStatsScreenOpensAndClosesToPriorState(t *testing.T) {
+	m := New(typing.Config{Mode: typing.ModeTime, TimeLimit: 30}, "yellow")
+	m.state = stateResults // pretend the palette was opened from the results screen
+
+	out, _ := m.apply(command{kind: cmdShowStats})
+	opened := out.(Model)
+	if opened.state != stateStats {
+		t.Fatalf("apply cmdShowStats: state = %v want stateStats", opened.state)
+	}
+	if opened.prevState != stateResults {
+		t.Fatalf("prevState = %v want stateResults", opened.prevState)
+	}
+
+	closed, _ := opened.handleKey(tea.KeyMsg{Type: tea.KeyEsc})
+	if got := closed.(Model).state; got != stateResults {
+		t.Fatalf("any key should return to prior state, got %v", got)
 	}
 }
 
