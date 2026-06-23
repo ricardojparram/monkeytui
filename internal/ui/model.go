@@ -120,6 +120,8 @@ func (m *Model) restart() {
 	m.state = stateTyping
 	m.now = time.Now()
 	m.caretShown = true
+	m.isPB = false
+	m.priorBest = 0
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
