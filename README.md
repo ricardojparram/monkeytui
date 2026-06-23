@@ -82,6 +82,22 @@ monkeytui -seed 42                 # reproducible word sequence
 | `-words` | `25`     | word count, for words mode |
 | `-theme` | `yellow` | accent: `yellow green cyan magenta blue red` |
 | `-seed`  | `0`      | fixed RNG seed (0 = random) |
+| `-punctuation` | `false` | mix in punctuation (time/words modes) |
+| `-numbers`     | `false` | mix in numbers (time/words modes) |
+
+### History & settings
+
+monkeytui remembers your last mode, duration, word count, theme, and
+punctuation/numbers toggles between runs (stored in your OS config dir, e.g.
+`~/.config/monkeytui/`). Explicit flags always override the saved settings.
+
+Every finished test is recorded; see a summary with:
+
+```sh
+monkeytui stats
+```
+
+The results screen shows `new pb` when you beat your best for the current mode.
 
 ## Keys
 
@@ -94,7 +110,7 @@ monkeytui -seed 42                 # reproducible word sequence
 | `Enter` (on results) | next test |
 | `Ctrl+C` | quit |
 
-In the command palette: type to filter, `↑`/`↓` to move, `Enter` to apply, `Esc` to close.
+In the command palette: type to filter, `↑`/`↓` to move, `Enter` to apply, `Esc` to close. The palette includes toggles for `punctuation` and `numbers` word decoration.
 
 ## Building from source
 
