@@ -17,6 +17,8 @@ const (
 	cmdModeQuote
 	cmdTheme
 	cmdRestart
+	cmdTogglePunct
+	cmdToggleNumbers
 	cmdQuit
 )
 
@@ -51,6 +53,8 @@ func newPalette() palette {
 		{title: "words 50", group: "mode", kind: cmdModeWords, arg: 50},
 		{title: "words 100", group: "mode", kind: cmdModeWords, arg: 100},
 		{title: "quote", group: "mode", kind: cmdModeQuote},
+		{title: "punctuation", group: "toggle", kind: cmdTogglePunct},
+		{title: "numbers", group: "toggle", kind: cmdToggleNumbers},
 	}
 	for _, name := range theme.Names() {
 		items = append(items, command{title: "theme " + name, group: "theme", kind: cmdTheme, sarg: name})
