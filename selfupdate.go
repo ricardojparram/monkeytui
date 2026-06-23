@@ -12,6 +12,8 @@ import (
 	"runtime/debug"
 	"strings"
 	"time"
+
+	"github.com/ricardojparram/monkeytui/internal/store"
 )
 
 // version is set at build time via -ldflags "-X main.version=vX.Y.Z". For
@@ -46,6 +48,8 @@ func dispatchCommand(args []string) bool {
 		runUpdate()
 	case "uninstall", "remove", "-uninstall", "--uninstall":
 		runUninstall()
+	case "stats", "-stats", "--stats":
+		fmt.Print(store.FormatStats(store.LoadHistory()))
 	default:
 		return false
 	}

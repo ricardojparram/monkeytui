@@ -82,7 +82,8 @@ func main() {
 				"  monkeytui [flags]            start a typing test\n"+
 				"  monkeytui update            update to the latest release\n"+
 				"  monkeytui uninstall         remove the installed binary\n"+
-				"  monkeytui version           print the version\n\n"+
+				"  monkeytui version           print the version\n"+
+				"  monkeytui stats             show typing history summary\n\n"+
 				"Flags:\n")
 		flag.PrintDefaults()
 	}
