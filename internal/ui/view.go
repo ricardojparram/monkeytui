@@ -204,6 +204,21 @@ func (m Model) bigStat(label, value string) string {
 		th.Main.Bold(true).Render(value))
 }
 
+// typeSummary describes the test on the results screen: mode plus any active
+// decoration toggles, e.g. "time 30 punctuation numbers".
+func typeSummary(cfg typing.Config) string {
+	s := modeLabel(cfg)
+	if cfg.Mode != typing.ModeQuote {
+		if cfg.Punctuation {
+			s += " punctuation"
+		}
+		if cfg.Numbers {
+			s += " numbers"
+		}
+	}
+	return s
+}
+
 // wordlistName labels the active content source, like monkeytype's "english".
 func (m Model) wordlistName() string {
 	if m.cfg.Mode == typing.ModeQuote {
@@ -223,13 +238,22 @@ func (m Model) renderResults(w int) string {
 		maxW = 40
 	}
 
-	// Left headline column: wpm, acc, and the test-type summary.
+	// Personal-best line under the wpm headline.
+	var pbLine string
+	if m.isPB {
+		pbLine = th.Main.Bold(true).Render("new pb")
+	} else if m.priorBest > 0 {
+		pbLine = th.Faint.Render(fmt.Sprintf("best %.0f", m.priorBest))
+	}
+
+	// Left headline column: wpm, pb/best, acc, and the test-type summary.
 	left := lipgloss.JoinVertical(lipgloss.Left,
 		m.bigStat("wpm", fmt.Sprintf("%.0f", r.WPM)),
+		pbLine,
 		m.bigStat("acc", fmt.Sprintf("%.0f%%", r.Accuracy)),
 		"",
 		th.Faint.Render("test type"),
-		th.Text.Render(modeLabel(m.cfg)),
+		th.Text.Render(typeSummary(m.cfg)),
 		th.Text.Render(m.wordlistName()),
 	)
 	leftW := lipgloss.Width(left)
