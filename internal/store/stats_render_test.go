@@ -28,4 +28,10 @@ func TestFormatStatsSummarizesPerMode(t *testing.T) {
 	if !strings.Contains(out, "3 tests") {
 		t.Fatalf("missing total count: %q", out)
 	}
+	if !strings.Contains(out, "80") { // avg time wpm = (70+90)/2
+		t.Fatalf("missing avg time wpm: %q", out)
+	}
+	if !strings.Contains(out, "96") { // avg time acc = (95+97)/2
+		t.Fatalf("missing avg time acc: %q", out)
+	}
 }
