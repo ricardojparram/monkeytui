@@ -8,6 +8,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/ricardojparram/monkeytui/internal/stats"
+	"github.com/ricardojparram/monkeytui/internal/store"
 	"github.com/ricardojparram/monkeytui/internal/theme"
 	"github.com/ricardojparram/monkeytui/internal/typing"
 )
@@ -33,6 +34,7 @@ type Model struct {
 	eng        *typing.Engine
 	cfg        typing.Config
 	th         theme.Theme
+	themeName  string
 	state      state
 	result     stats.Result
 	pal        palette
@@ -40,6 +42,11 @@ type Model struct {
 	width      int
 	height     int
 	caretShown bool
+
+	history   []store.Record
+	persist   bool
+	priorBest float64
+	isPB      bool
 }
 
 // New creates the initial model from a starting config and theme name.
@@ -48,10 +55,46 @@ func New(cfg typing.Config, themeName string) Model {
 		eng:        typing.New(cfg),
 		cfg:        cfg,
 		th:         theme.ByName(themeName),
+		themeName:  themeName,
 		state:      stateTyping,
 		pal:        newPalette(),
 		now:        time.Now(),
 		caretShown: true,
+	}
+}
+
+// WithStore enables disk persistence and seeds the in-memory history used for
+// personal-best comparisons. main.go calls this; tests leave persistence off.
+func (m Model) WithStore(history []store.Record) Model {
+	m.history = history
+	m.persist = true
+	return m
+}
+
+// prefs snapshots the current settings for persistence.
+func (m Model) prefs() store.Prefs {
+	return store.Prefs{
+		Mode:        m.cfg.Mode.String(),
+		TimeLimit:   m.cfg.TimeLimit,
+		WordCount:   m.cfg.WordCount,
+		Theme:       m.themeName,
+		Punctuation: m.cfg.Punctuation,
+		Numbers:     m.cfg.Numbers,
+	}
+}
+
+// savePrefs persists the current settings when persistence is enabled.
+func (m *Model) savePrefs() {
+	if m.persist {
+		_ = store.SavePrefs(m.prefs())
+	}
+}
+
+// bucket identifies the current test's personal-best group.
+func (m Model) bucket() store.Bucket {
+	return store.Bucket{
+		Mode: m.cfg.Mode.String(), TimeLimit: m.cfg.TimeLimit, WordCount: m.cfg.WordCount,
+		Punctuation: m.cfg.Punctuation, Numbers: m.cfg.Numbers,
 	}
 }
 
@@ -109,6 +152,28 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *Model) finishToResults() {
 	m.result = m.eng.Result(m.now)
 	m.state = stateResults
+
+	prev, ok := store.BestWPM(m.history, m.bucket())
+	m.priorBest = prev
+	m.isPB = !ok || m.result.WPM > prev
+
+	rec := store.Record{
+		Time:        m.now,
+		Mode:        m.cfg.Mode.String(),
+		TimeLimit:   m.cfg.TimeLimit,
+		WordCount:   m.cfg.WordCount,
+		Punctuation: m.cfg.Punctuation,
+		Numbers:     m.cfg.Numbers,
+		WPM:         m.result.WPM,
+		Raw:         m.result.Raw,
+		Accuracy:    m.result.Accuracy,
+		Consistency: m.result.Consistency,
+	}
+	m.history = append(m.history, rec)
+	if m.persist {
+		_ = store.AppendRecord(rec)
+		m.savePrefs()
+	}
 }
 
 func (m Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
@@ -195,19 +260,36 @@ func (m Model) handlePaletteKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 func (m Model) apply(cmd command) (tea.Model, tea.Cmd) {
 	switch cmd.kind {
 	case cmdModeTime:
-		m.cfg = typing.Config{Mode: typing.ModeTime, TimeLimit: cmd.arg}
+		m.cfg.Mode = typing.ModeTime
+		m.cfg.TimeLimit = cmd.arg
 		m.restart()
+		m.savePrefs()
 		return m, tick()
 	case cmdModeWords:
-		m.cfg = typing.Config{Mode: typing.ModeWords, WordCount: cmd.arg}
+		m.cfg.Mode = typing.ModeWords
+		m.cfg.WordCount = cmd.arg
 		m.restart()
+		m.savePrefs()
 		return m, tick()
 	case cmdModeQuote:
-		m.cfg = typing.Config{Mode: typing.ModeQuote}
+		m.cfg.Mode = typing.ModeQuote
 		m.restart()
+		m.savePrefs()
+		return m, tick()
+	case cmdTogglePunct:
+		m.cfg.Punctuation = !m.cfg.Punctuation
+		m.restart()
+		m.savePrefs()
+		return m, tick()
+	case cmdToggleNumbers:
+		m.cfg.Numbers = !m.cfg.Numbers
+		m.restart()
+		m.savePrefs()
 		return m, tick()
 	case cmdTheme:
 		m.th = theme.ByName(cmd.sarg)
+		m.themeName = cmd.sarg
+		m.savePrefs()
 		return m, nil
 	case cmdRestart:
 		m.restart()
